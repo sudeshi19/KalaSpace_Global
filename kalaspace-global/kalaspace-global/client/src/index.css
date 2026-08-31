@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Color tokens */
+  --color-bg: #f5efe0;
+  --color-surface: #fffdf8;
+  --color-text: #3b2a1e;
+  --color-text-soft: #6b5643;
+  --color-gold-1: #d8ae55;
+  --color-gold-2: #9c6a2b;
+  --color-accent: #b5652f;
+  --color-border: #e3d5b8;
+
+  /* Type */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Poppins', sans-serif;
+
+  /* Layout */
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow-soft: 0 4px 16px rgba(59, 42, 30, 0.08);
+  --topbar-height: 84px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
