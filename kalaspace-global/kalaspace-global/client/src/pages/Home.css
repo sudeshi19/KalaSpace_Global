@@ -60,6 +60,8 @@
   padding: 14px 22px;
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 0;
+  font: inherit;
 }
 
 .home__cta:hover {
@@ -183,6 +185,22 @@
 }
 
 .footer__links a:hover {
+  color: var(--color-accent);
+}
+
+.footer__link-button {
+  display: block;
+  margin-bottom: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.footer__link-button:hover {
   color: var(--color-accent);
 }
 

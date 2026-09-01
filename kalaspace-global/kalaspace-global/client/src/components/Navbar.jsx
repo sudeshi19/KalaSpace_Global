@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { Home as HomeIcon, User, Bell, Search, MessageCircle } from 'lucide-react';
 import logo from '../assets/kala-logo.jpg';
 import './Navbar.css';
+import ProductListing from '../pages/ProductListing';
 
 const NAV_LINKS = [
   { label: 'Home', href: '#home' },
   { label: 'About Us', href: '#about' },
   { label: 'Gallery', href: '#gallery' },
-  { label: 'Sell Art', href: '#sell' },
 ];
 
-function Navbar({ onSearch }) {
+function Navbar({ onSearch, onSellArt, onProducts }) {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e) => {
@@ -51,6 +51,13 @@ function Navbar({ onSearch }) {
             {link.label}
           </a>
         ))}
+        <button type="button" className="navbar__link-button" onClick={onSellArt}>
+          Sell Art
+        </button>
+
+        <button type="button" className="navbar__link-button" onClick={onProducts}>
+          Products
+        </button>
       </nav>
 
       <div className="navbar__icons">

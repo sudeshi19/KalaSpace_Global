@@ -154,7 +154,7 @@ const FALLBACK_ARTWORKS = [
   },
 ];
 
-function Home() {
+function Home({ onSellArt, onProducts }) {
   const [artworks, setArtworks] = useState(FALLBACK_ARTWORKS);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('paintings');
@@ -185,7 +185,7 @@ function Home() {
 
   return (
     <div className="home">
-      <Navbar onSearch={setSearch} />
+      <Navbar onSearch={setSearch} onSellArt={onSellArt} onProducts={onProducts} />
 
       <header className="home__hero">
         <div className="home__hero-copy">
@@ -197,7 +197,9 @@ function Home() {
           </p>
           <div className="home__hero-actions">
             <a href="#gallery" className="home__cta home__cta--primary">Explore collection</a>
-            <a href="#sell" className="home__cta home__cta--secondary">Sell your art</a>
+            <button type="button" className="home__cta home__cta--secondary" onClick={onSellArt}>
+              Sell your art
+            </button>
           </div>
         </div>
 
@@ -237,7 +239,9 @@ function Home() {
             <div>
               <h4>Company</h4>
               <a href="#about">About Us</a>
-              <a href="#sell">Sell Art</a>
+              <button type="button" className="footer__link-button" onClick={onSellArt}>
+                Sell Art
+              </button>
               <a href="#journal">Journal</a>
             </div>
 
