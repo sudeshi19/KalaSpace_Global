@@ -116,6 +116,12 @@
   gap: 22px;
 }
 
+@media (min-width: 1200px) {
+  .product-page__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .product-card {
   overflow: hidden;
   border-radius: 22px;
