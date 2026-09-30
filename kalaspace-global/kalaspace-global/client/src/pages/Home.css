@@ -220,6 +220,19 @@
   margin: 0;
 }
 
+.login-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(34, 23, 16, 0.46); }
+.login-modal__form { position: relative; width: min(420px, 100%); padding: 32px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 10px; box-shadow: var(--shadow-soft); }
+.login-modal__form h2 { margin: 0 0 10px; font-family: var(--font-display); font-size: 2rem; }
+.login-modal__form p:not(.home__eyebrow) { color: var(--color-text-soft); line-height: 1.5; }
+.login-modal__form input, .login-modal__form select { box-sizing: border-box; width: 100%; margin-top: 14px; padding: 12px; border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-text); font: inherit; }
+.login-modal__form label { display: block; margin-top: 18px; font-weight: 700; font-size: .9rem; }
+.login-modal__form > button:last-child { width: 100%; margin-top: 20px; padding: 13px; border: 0; background: var(--color-accent); color: white; font-weight: 700; cursor: pointer; }
+.login-modal__close { position: absolute; top: 12px; right: 16px; border: 0; background: transparent; color: var(--color-text-soft); font-size: 1.6rem; cursor: pointer; }
+.login-modal__hint, .login-modal__error { font-size: .82rem; }
+.login-modal__error { color: #a13e32; }
+.login-modal__form button:disabled { opacity: .6; cursor: wait; }
+.login-modal__switch { width: 100%; margin-top: 12px; border: 0; background: transparent; color: var(--color-accent); font-size: .86rem; }
+
 @media (max-width: 900px) {
   .home__body {
     flex-direction: column;

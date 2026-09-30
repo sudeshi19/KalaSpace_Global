@@ -12,6 +12,7 @@ function SellArt({ onBack, onPublish, currentRole }) {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('paintings');
   const [price, setPrice] = useState('');
+  const [color, setColor] = useState('');
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [errors, setErrors] = useState({});
@@ -24,6 +25,7 @@ function SellArt({ onBack, onPublish, currentRole }) {
     if (!title.trim()) nextErrors.title = 'Artwork title is required.';
     if (!category) nextErrors.category = 'Category is required.';
     if (!price || Number(price) <= 0) nextErrors.price = 'Price must be greater than zero.';
+    if (!color) nextErrors.color = 'Color is required.';
     if (!description.trim()) nextErrors.description = 'Description is required.';
     if (!imageFile) nextErrors.image = 'At least one image is required.';
 
@@ -38,6 +40,7 @@ function SellArt({ onBack, onPublish, currentRole }) {
       title: title.trim() || 'Untitled artwork',
       category,
       price: Number(price) || 0,
+      color,
       description: description.trim(),
       imageUrl: imageFile ? URL.createObjectURL(imageFile) : 'https://images.unsplash.com/photo-1579783901588-8f67a7b88b52?auto=format&fit=crop&w=900&q=80',
       ratingsCount: 345,
@@ -119,6 +122,23 @@ function SellArt({ onBack, onPublish, currentRole }) {
                 onChange={(event) => setPrice(event.target.value)}
               />
               {errors.price ? <span className="sell-form__error">{errors.price}</span> : null}
+            </label>
+
+            <label>
+              Dominant color
+              <select value={color} onChange={(event) => setColor(event.target.value)}>
+                <option value="">Select a color</option>
+                <option value="blue">Blue</option>
+                <option value="brown">Brown</option>
+                <option value="green">Green</option>
+                <option value="orange">Orange</option>
+                <option value="pink">Pink</option>
+                <option value="purple">Purple</option>
+                <option value="red">Red</option>
+                <option value="white">White</option>
+                <option value="yellow">Yellow</option>
+              </select>
+              {errors.color ? <span className="sell-form__error">{errors.color}</span> : null}
             </label>
 
             <label>

@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { label: 'Gallery', href: '#gallery' },
 ];
 
-function Navbar({ onSearch, onSellArt, onProducts, onCart, cartCount, customerEmail, onLogin }) {
+function Navbar({ onSearch, onSellArt, onProducts, onCart, onMessages, cartCount, customerEmail, currentRole, onLogin, onLogout }) {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e) => {
@@ -61,14 +61,16 @@ function Navbar({ onSearch, onSellArt, onProducts, onCart, cartCount, customerEm
 
       <div className="navbar__icons">
         <a href="#home" aria-label="Home"><HomeIcon size={20} /></a>
-        <button type="button" className="navbar__icon-button" onClick={customerEmail ? onLogin : onLogin} aria-label={customerEmail ? `Signed in as ${customerEmail}` : 'Sign in with email'} title={customerEmail || 'Sign in with email'}><User size={20} /></button>
+        <button type="button" className="navbar__icon-button" onClick={onLogin} aria-label={customerEmail ? `Signed in as ${currentRole}, ${customerEmail}` : 'Sign in with email'} title={customerEmail ? `${currentRole} · ${customerEmail}` : 'Sign in with email'}><User size={20} /></button>
+        {customerEmail ? <span className="navbar__role-label">{currentRole}</span> : null}
         <a href="#notifications" aria-label="Notifications"><Bell size={20} /></a>
-        <a href="#chat" aria-label="Messages"><MessageCircle size={20} /></a>
+        <button type="button" className="navbar__icon-button" onClick={onMessages} aria-label="Messages" title="Messages"><MessageCircle size={20} /></button>
         <button type="button" className="navbar__cart-button" onClick={onCart} aria-label={`Shopping cart with ${cartCount} items`}>
           <ShoppingCart size={20} />
           {cartCount > 0 ? <span className="navbar__cart-count">{cartCount}</span> : null}
         </button>
       </div>
+      {customerEmail ? <button type="button" className="navbar__logout" onClick={onLogout}>Sign out</button> : null}
     </header>
   );
 }

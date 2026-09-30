@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.04e8c61d.css",
-    "main.js": "/static/js/main.bcd018bb.js",
+    "main.css": "/static/css/main.3a544d4b.css",
+    "main.js": "/static/js/main.5611c72e.js",
     "static/media/kala-logo.jpg": "/static/media/kala-logo.68c2e9857a77f50ba31b.jpg",
     "index.html": "/index.html",
-    "main.04e8c61d.css.map": "/static/css/main.04e8c61d.css.map",
-    "main.bcd018bb.js.map": "/static/js/main.bcd018bb.js.map"
+    "main.3a544d4b.css.map": "/static/css/main.3a544d4b.css.map",
+    "main.5611c72e.js.map": "/static/js/main.5611c72e.js.map"
   },
   "entrypoints": [
-    "static/css/main.04e8c61d.css",
-    "static/js/main.bcd018bb.js"
+    "static/css/main.3a544d4b.css",
+    "static/js/main.5611c72e.js"
   ]
 }

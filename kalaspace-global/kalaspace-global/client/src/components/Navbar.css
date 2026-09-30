@@ -137,6 +137,8 @@
 .navbar__icon-button:hover,
 .navbar__cart-button:hover { color: var(--color-accent); }
 .navbar__cart-count { position: absolute; top: -10px; right: -10px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 50%; background: var(--color-accent); color: white; font-size: .65rem; display: grid; place-items: center; }
+.navbar__role-label { color: var(--color-accent); font-size: .72rem; font-weight: 700; text-transform: capitalize; }
+.navbar__logout { border: 0; background: transparent; color: var(--color-text-soft); font-size: .75rem; cursor: pointer; }
 
 @media (max-width: 900px) {
   .navbar {

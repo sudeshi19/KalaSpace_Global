@@ -4,7 +4,7 @@ import './Cart.css';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-function Cart({ cart, email, onBack, onUpdateQuantity, onRemove, onOrderComplete }) {
+function Cart({ cart, email, authToken, onBack, onUpdateQuantity, onRemove, onOrderComplete }) {
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -15,9 +15,8 @@ function Cart({ cart, email, onBack, onUpdateQuantity, onRemove, onOrderComplete
     try {
       const response = await fetch(`${API_BASE}/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
         body: JSON.stringify({
-          email,
           items: cart.map(({ id, title, price, imageUrl, quantity }) => ({
             artworkId: id,
             title,

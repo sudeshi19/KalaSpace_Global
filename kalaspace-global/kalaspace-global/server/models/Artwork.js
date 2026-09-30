@@ -11,6 +11,7 @@ const artworkSchema = new mongoose.Schema(
     },
     imageUrl: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
+    color: { type: String, trim: true, lowercase: true },
     description: { type: String, trim: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
