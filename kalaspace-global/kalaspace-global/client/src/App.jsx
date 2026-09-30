@@ -2,6 +2,7 @@ import React from 'react';
 import Home from './pages/Home';
 import SellArt from './pages/SellArt';
 import ProductListing from './pages/ProductListing';
+import Cart from './pages/Cart';
 
 const INITIAL_LISTINGS = [
   {
@@ -54,6 +55,60 @@ function App() {
   const [view, setView] = React.useState('home');
   const [listings, setListings] = React.useState(INITIAL_LISTINGS);
   const [currentRole, setCurrentRole] = React.useState('artist');
+  const [cart, setCart] = React.useState([]);
+  const [customerEmail, setCustomerEmail] = React.useState('');
+  const [showLogin, setShowLogin] = React.useState(false);
+  const [loginEmail, setLoginEmail] = React.useState('');
+  const [pendingListing, setPendingListing] = React.useState(null);
+
+  const handleAddToCart = (listing) => {
+    if (!customerEmail) {
+      setPendingListing(listing);
+      setShowLogin(true);
+      setView('home');
+      return;
+    }
+
+    setCart((currentCart) => {
+      const existingItem = currentCart.find((item) => item.id === listing.id);
+      if (existingItem) {
+        return currentCart.map((item) => (
+          item.id === listing.id ? { ...item, quantity: item.quantity + 1 } : item
+        ));
+      }
+      return [...currentCart, { ...listing, quantity: 1 }];
+    });
+  };
+
+  const handleAddToCartWithEmail = (listing, email) => {
+    setCart((currentCart) => {
+      const existingItem = currentCart.find((item) => item.id === listing.id);
+      if (existingItem) {
+        return currentCart.map((item) => (
+          item.id === listing.id ? { ...item, quantity: item.quantity + 1 } : item
+        ));
+      }
+      return [...currentCart, { ...listing, quantity: 1, customerEmail: email }];
+    });
+  };
+
+  const handleLoginSubmit = (event) => {
+    event.preventDefault();
+    const normalizedEmail = loginEmail.trim().toLowerCase();
+    if (!normalizedEmail || !normalizedEmail.includes('@')) return;
+    setCustomerEmail(normalizedEmail);
+    setShowLogin(false);
+    if (pendingListing) {
+      handleAddToCartWithEmail(pendingListing, normalizedEmail);
+      setPendingListing(null);
+    }
+  };
+
+  const updateCartQuantity = (listingId, quantity) => {
+    setCart((currentCart) => currentCart
+      .map((item) => item.id === listingId ? { ...item, quantity } : item)
+      .filter((item) => item.quantity > 0));
+  };
 
   const handlePublish = (listing) => {
     setListings((currentListings) => [listing, ...currentListings]);
@@ -83,11 +138,43 @@ function App() {
         currentRole={currentRole}
         onRoleChange={setCurrentRole}
         onDeleteListing={handleDeleteListing}
+        onAddToCart={handleAddToCart}
+        cartCount={cart.reduce((count, item) => count + item.quantity, 0)}
+        onCart={() => setView('cart')}
       />
     );
   }
 
-  return <Home onSellArt={() => setView('sell')} onProducts={() => setView('products')} />;
+  if (view === 'cart') {
+    return (
+      <Cart
+        cart={cart}
+        email={customerEmail}
+        onBack={() => setView('home')}
+        onUpdateQuantity={updateCartQuantity}
+        onRemove={(listingId) => updateCartQuantity(listingId, 0)}
+        onOrderComplete={() => { setCart([]); setView('home'); }}
+      />
+    );
+  }
+
+  return (
+    <>
+      <Home onSellArt={() => setView('sell')} onProducts={() => setView('products')} onCart={() => setView('cart')} cartCount={cart.reduce((count, item) => count + item.quantity, 0)} customerEmail={customerEmail} onLogin={() => setShowLogin(true)} />
+      {showLogin ? (
+        <div className="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+          <form className="login-modal__form" onSubmit={handleLoginSubmit}>
+            <button type="button" className="login-modal__close" onClick={() => setShowLogin(false)} aria-label="Close sign in">×</button>
+            <p className="home__eyebrow">Collector access</p>
+            <h2 id="login-title">Sign in with your email</h2>
+            <p>Use your email to save your cart and receive order confirmation.</p>
+            <input type="email" required autoFocus placeholder="you@example.com" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} />
+            <button type="submit">Continue</button>
+          </form>
+        </div>
+      ) : null}
+    </>
+  );
 }
 
 export default App;

@@ -9,7 +9,7 @@ const CATEGORY_OPTIONS = [
   { id: 'sculptures', label: 'Sculptures' },
 ];
 
-function ProductListing({ listings, onBackHome, onSellArt, currentRole, onRoleChange, onDeleteListing }) {
+function ProductListing({ listings, onBackHome, onSellArt, currentRole, onRoleChange, onDeleteListing, onAddToCart, cartCount, onCart }) {
   const [activeCategory, setActiveCategory] = useState('all');
 
   const visibleListings = useMemo(
@@ -48,6 +48,9 @@ function ProductListing({ listings, onBackHome, onSellArt, currentRole, onRoleCh
           <button type="button" className="product-page__cta" onClick={onSellArt}>
             <Zap size={18} />
             Add another listing
+          </button>
+          <button type="button" className="product-page__cart-link" onClick={onCart}>
+            Cart ({cartCount})
           </button>
         </div>
       </header>
@@ -96,7 +99,7 @@ function ProductListing({ listings, onBackHome, onSellArt, currentRole, onRoleCh
               </p>
 
               <div className="product-card__actions">
-                <button type="button" className="product-card__button">
+                <button type="button" className="product-card__button" onClick={() => onAddToCart?.(listing)}>
                   Add to cart
                 </button>
 

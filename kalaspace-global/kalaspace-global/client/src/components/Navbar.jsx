@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Home as HomeIcon, User, Bell, Search, MessageCircle } from 'lucide-react';
+import { Home as HomeIcon, User, Bell, Search, MessageCircle, ShoppingCart } from 'lucide-react';
 import logo from '../assets/kala-logo.jpg';
 import './Navbar.css';
-import ProductListing from '../pages/ProductListing';
 
 const NAV_LINKS = [
   { label: 'Home', href: '#home' },
@@ -10,7 +9,7 @@ const NAV_LINKS = [
   { label: 'Gallery', href: '#gallery' },
 ];
 
-function Navbar({ onSearch, onSellArt, onProducts }) {
+function Navbar({ onSearch, onSellArt, onProducts, onCart, cartCount, customerEmail, onLogin }) {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e) => {
@@ -62,9 +61,13 @@ function Navbar({ onSearch, onSellArt, onProducts }) {
 
       <div className="navbar__icons">
         <a href="#home" aria-label="Home"><HomeIcon size={20} /></a>
-        <a href="#profile" aria-label="Profile"><User size={20} /></a>
+        <button type="button" className="navbar__icon-button" onClick={customerEmail ? onLogin : onLogin} aria-label={customerEmail ? `Signed in as ${customerEmail}` : 'Sign in with email'} title={customerEmail || 'Sign in with email'}><User size={20} /></button>
         <a href="#notifications" aria-label="Notifications"><Bell size={20} /></a>
         <a href="#chat" aria-label="Messages"><MessageCircle size={20} /></a>
+        <button type="button" className="navbar__cart-button" onClick={onCart} aria-label={`Shopping cart with ${cartCount} items`}>
+          <ShoppingCart size={20} />
+          {cartCount > 0 ? <span className="navbar__cart-count">{cartCount}</span> : null}
+        </button>
       </div>
     </header>
   );
