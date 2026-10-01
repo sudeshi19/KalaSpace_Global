@@ -4,6 +4,7 @@ import SellArt from './pages/SellArt';
 import ProductListing from './pages/ProductListing';
 import Cart from './pages/Cart';
 import Messages from './pages/Messages';
+import AuthPage from './pages/AuthPage';
 
 const INITIAL_LISTINGS = [
   {
@@ -96,7 +97,7 @@ function App() {
     if (!authToken || !customerEmail) {
       setPendingListing(listing);
       setShowLogin(true);
-      setView('home');
+      setView('auth');
       return;
     }
 
@@ -146,6 +147,7 @@ function App() {
       setCustomerEmail(data.user.email);
       setCurrentRole(data.user.role);
       setShowLogin(false);
+      setView('home');
       setLoginName('');
       setLoginEmail('');
       setLoginPassword('');
@@ -165,7 +167,8 @@ function App() {
     setAuthMode('login');
     setAuthError('');
     setLoginName('');
-    setShowLogin(true);
+    setShowLogin(false);
+    setView('auth');
   };
 
   const handleLogout = () => {
@@ -197,6 +200,27 @@ function App() {
         onBack={() => setView('home')}
         currentRole={currentRole}
         onPublish={handlePublish}
+      />
+    );
+  }
+
+  if (view === 'auth') {
+    return (
+      <AuthPage
+        mode={authMode}
+        onModeChange={(mode) => { setAuthMode(mode); setAuthError(''); }}
+        name={loginName}
+        email={loginEmail}
+        password={loginPassword}
+        role={loginRole}
+        error={authError}
+        busy={authBusy}
+        onNameChange={setLoginName}
+        onEmailChange={setLoginEmail}
+        onPasswordChange={setLoginPassword}
+        onRoleChange={setLoginRole}
+        onSubmit={handleLoginSubmit}
+        onBack={() => setView('home')}
       />
     );
   }
