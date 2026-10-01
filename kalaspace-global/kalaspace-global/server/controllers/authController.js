@@ -16,12 +16,14 @@ const responseFor = (user) => ({
 exports.register = async (req, res) => {
   try {
     const { email, password, role = 'user', name = '' } = req.body;
-    if (!email || !/^\S+@\S+\.\S+$/.test(email) || !password || password.length < 6) {
-      return res.status(400).json({ message: 'Email and a password of at least 6 characters are required' });
+    const normalizedEmail = email?.trim().toLowerCase();
+    const normalizedName = name.trim();
+    if (!normalizedEmail || !/^\S+@\S+\.\S+$/.test(normalizedEmail) || !password || password.length < 6 || !normalizedName) {
+      return res.status(400).json({ message: 'Name, email, and a password of at least 6 characters are required' });
     }
-    if (!['admin', 'user', 'artist'].includes(role)) return res.status(400).json({ message: 'Invalid role' });
-    if (await User.exists({ email: email.toLowerCase() })) return res.status(409).json({ message: 'An account with this email already exists' });
-    const user = await User.create({ email, passwordHash: await bcrypt.hash(password, 12), role, name });
+    if (!['user', 'artist'].includes(role)) return res.status(400).json({ message: 'New accounts can only be User or Artist accounts' });
+    if (await User.exists({ email: normalizedEmail })) return res.status(409).json({ message: 'An account with this email already exists' });
+    const user = await User.create({ email: normalizedEmail, passwordHash: await bcrypt.hash(password, 12), role, name: normalizedName });
     res.status(201).json(responseFor(user));
   } catch (error) {
     res.status(500).json({ message: 'Failed to create account', error: error.message });
@@ -40,5 +42,5 @@ exports.login = async (req, res) => {
 };
 
 exports.me = (req, res) => res.json({
-  user: { id: req.user._id, email: req.user.email, role: req.user.role, name: req.user.name },
+  user: { id: req.user._id, email: req.user.email, role: req.user.role, name: req.user.name, displayName: req.user.displayName },
 });

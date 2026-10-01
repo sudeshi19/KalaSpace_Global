@@ -70,6 +70,7 @@ function App() {
   const [pendingListing, setPendingListing] = React.useState(null);
   const [authToken, setAuthToken] = React.useState(() => localStorage.getItem('kalaspace_token') || '');
   const [authMode, setAuthMode] = React.useState('login');
+  const [loginName, setLoginName] = React.useState('');
   const [loginPassword, setLoginPassword] = React.useState('');
   const [authError, setAuthError] = React.useState('');
   const [authBusy, setAuthBusy] = React.useState(false);
@@ -125,14 +126,18 @@ function App() {
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
     const normalizedEmail = loginEmail.trim().toLowerCase();
-    if (!normalizedEmail || !normalizedEmail.includes('@') || loginPassword.length < 6) return;
+    const normalizedName = loginName.trim();
+    if (!normalizedEmail || !normalizedEmail.includes('@') || loginPassword.length < 6 || (authMode === 'register' && !normalizedName)) {
+      setAuthError(authMode === 'register' ? 'Enter your name, email, and a password of at least 6 characters' : 'Enter a valid email and a password of at least 6 characters');
+      return;
+    }
     setAuthBusy(true);
     setAuthError('');
     try {
       const response = await fetch(`${API_BASE}/auth/${authMode}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: normalizedEmail, password: loginPassword, role: loginRole }),
+        body: JSON.stringify({ email: normalizedEmail, password: loginPassword, role: loginRole, name: normalizedName }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Authentication failed');
@@ -141,6 +146,8 @@ function App() {
       setCustomerEmail(data.user.email);
       setCurrentRole(data.user.role);
       setShowLogin(false);
+      setLoginName('');
+      setLoginEmail('');
       setLoginPassword('');
       if (pendingListing) {
         handleAddToCartWithEmail(pendingListing, data.user.email);
@@ -157,6 +164,7 @@ function App() {
     setLoginRole(currentRole);
     setAuthMode('login');
     setAuthError('');
+    setLoginName('');
     setShowLogin(true);
   };
 
@@ -236,16 +244,22 @@ function App() {
           <form className="login-modal__form" onSubmit={handleLoginSubmit}>
             <button type="button" className="login-modal__close" onClick={() => setShowLogin(false)} aria-label="Close sign in">×</button>
             <p className="home__eyebrow">Collector access</p>
-            <h2 id="login-title">Sign in with your email</h2>
-            <p>Use your email to save your cart and receive order confirmation.</p>
+            <h2 id="login-title">{authMode === 'login' ? 'Welcome back' : 'Create your account'}</h2>
+            <p>{authMode === 'login' ? 'Use your email to access your saved cart and messages.' : 'Create an account to save your cart, message artists, and track orders.'}</p>
+            {authMode === 'register' ? (
+              <>
+                <label htmlFor="login-name">Full name</label>
+                <input id="login-name" type="text" required autoFocus placeholder="Your full name" value={loginName} onChange={(event) => setLoginName(event.target.value)} />
+              </>
+            ) : null}
             <input type="email" required autoFocus placeholder="you@example.com" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} />
             <label htmlFor="login-password">Password</label>
             <input id="login-password" type="password" required minLength="6" placeholder="At least 6 characters" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} />
-            <label htmlFor="login-role">Sign in as</label>
+            <label htmlFor="login-role">{authMode === 'login' ? 'Sign in as' : 'Account type'}</label>
             <select id="login-role" value={loginRole} onChange={(event) => setLoginRole(event.target.value)}>
               <option value="user">User</option>
               <option value="artist">Artist</option>
-              <option value="admin">Admin</option>
+              {authMode === 'login' ? <option value="admin">Admin</option> : null}
             </select>
             {authMode === 'register' ? <p className="login-modal__hint">New accounts can be User or Artist. Admin accounts are provisioned by the server.</p> : null}
             {authError ? <p className="login-modal__error">{authError}</p> : null}
