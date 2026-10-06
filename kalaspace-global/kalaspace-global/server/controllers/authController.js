@@ -33,7 +33,8 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email?.toLowerCase() });
+    const normalizedEmail = email?.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user || !(await bcrypt.compare(password || '', user.passwordHash))) return res.status(401).json({ message: 'Email or password is incorrect' });
     res.json(responseFor(user));
   } catch (error) {
