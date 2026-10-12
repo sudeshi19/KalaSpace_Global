@@ -45,3 +45,25 @@ export const login = async (req, res) => {
 export const me = (req, res) => res.json({
   user: { id: req.user._id, email: req.user.email, role: req.user.role, name: req.user.name, displayName: req.user.displayName },
 });
+
+export const listUsers = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Admin access required' });
+    const users = await User.find({})
+      .select('_id name displayName email role createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json({
+      users: users.map((user) => ({
+        id: user._id,
+        name: user.displayName || user.name || 'Unnamed member',
+        email: user.email,
+        role: user.role === 'user' ? 'buyer' : user.role,
+        status: 'Active',
+        createdAt: user.createdAt,
+      })),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to load users', error: error.message });
+  }
+};
