@@ -57,6 +57,21 @@ export const getMyArtworks = async (req, res) => {
   }
 };
 
+// DELETE /api/artworks/:id
+export const deleteArtwork = async (req, res) => {
+  try {
+    const artwork = await Artwork.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
+    if (!artwork) return res.status(404).json({ message: 'Artwork not found or you do not own it' });
+    res.json({ message: 'Artwork deleted successfully', id: artwork._id });
+  } catch (err) {
+    if (err.name === 'CastError') return res.status(400).json({ message: 'Invalid artwork id' });
+    res.status(500).json({ message: 'Failed to delete artwork', error: err.message });
+  }
+};
+
 // GET /api/artworks/:id
 export const getArtworkById = async (req, res) => {
   try {
