@@ -1,5 +1,30 @@
 import Artwork from '../models/Artwork.js';
 
+// POST /api/artworks
+export const createArtwork = async (req, res) => {
+  try {
+    const { title, category, imageUrl, price, color, description } = req.body;
+    if (!title || !category || !imageUrl || !price || !color || !description) {
+      return res.status(400).json({ message: 'Title, category, image, price, color, and description are required' });
+    }
+
+    const artwork = await Artwork.create({
+      title,
+      category,
+      imageUrl,
+      price: Number(price),
+      color,
+      description,
+      artistName: req.user.displayName || req.user.name || req.user.email,
+      owner: req.user._id,
+    });
+
+    res.status(201).json(artwork);
+  } catch (err) {
+    res.status(400).json({ message: 'Failed to save artwork', error: err.message });
+  }
+};
+
 // GET /api/artworks?category=paintings&q=sunset
 export const getArtworks = async (req, res) => {
   try {
@@ -18,6 +43,16 @@ export const getArtworks = async (req, res) => {
     res.json(artworks);
   } catch (err) {
     res.status(500).json({ message: 'Failed to load artworks', error: err.message });
+  }
+};
+
+// GET /api/artworks/mine
+export const getMyArtworks = async (req, res) => {
+  try {
+    const artworks = await Artwork.find({ owner: req.user._id }).sort({ createdAt: -1 });
+    res.json(artworks);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to load your artworks', error: err.message });
   }
 };
 
