@@ -14,6 +14,8 @@ const artworkSchema = new mongoose.Schema(
     color: { type: String, trim: true, lowercase: true },
     description: { type: String, trim: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    stock: { type: Number, min: 0, default: 1 },
+    soldCount: { type: Number, min: 0, default: 0 },
   },
   { timestamps: true }
 );

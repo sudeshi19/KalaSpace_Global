@@ -3,7 +3,7 @@ import Artwork from '../models/Artwork.js';
 // POST /api/artworks
 export const createArtwork = async (req, res) => {
   try {
-    const { title, category, imageUrl, price, color, description } = req.body;
+    const { title, category, imageUrl, price, color, description, stock = 1 } = req.body;
     if (!title || !category || !imageUrl || !price || !color || !description) {
       return res.status(400).json({ message: 'Title, category, image, price, color, and description are required' });
     }
@@ -17,6 +17,7 @@ export const createArtwork = async (req, res) => {
       description,
       artistName: req.user.displayName || req.user.name || req.user.email,
       owner: req.user._id,
+      stock: Math.max(0, Number.parseInt(stock, 10) || 0),
     });
 
     res.status(201).json(artwork);
