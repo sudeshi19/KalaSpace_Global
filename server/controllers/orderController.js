@@ -38,8 +38,17 @@ export const createOrder = async (req, res) => {
         quantity,
       };
     });
-    const total = normalizedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const order = await Order.create({ email, buyer: req.user._id, items: normalizedItems, total });
+    const subtotal = normalizedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const shipping = subtotal >= 20000 ? 0 : 1500;
+    const total = subtotal + shipping;
+    const order = await Order.create({
+      email,
+      buyer: req.user._id,
+      items: normalizedItems,
+      total,
+      paymentStatus: 'Pending',
+      paymentMethod: 'PayHere Sandbox',
+    });
     await Promise.all(normalizedItems.map((item) => Artwork.updateOne(
       { _id: item.artworkId },
       { $inc: { soldCount: item.quantity, stock: -item.quantity } },
@@ -81,5 +90,71 @@ export const getArtistOrders = async (req, res) => {
     res.json(artistOrders);
   } catch (error) {
     res.status(500).json({ message: 'Failed to load artist orders', error: error.message });
+  }
+};
+
+export const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      buyer: req.user._id,
+    }).lean();
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json({
+      order: {
+        id: order._id,
+        createdAt: order.createdAt,
+        email: order.email,
+        total: order.total,
+        paymentStatus: order.paymentStatus,
+        status: order.paymentStatus === 'Paid' ? 'Processing' : 'Awaiting payment',
+      },
+      items: order.items,
+    });
+  } catch (error) {
+    res.status(400).json({ message: 'Invalid order reference' });
+  }
+};
+
+const SANDBOX_CARDS = new Set([
+  '4916217501611292',
+  '5307732125531191',
+  '346781005510225',
+]);
+
+export const paySandboxOrder = async (req, res) => {
+  try {
+    const { cardNumber, expiry, cvv, cardholderName } = req.body;
+    const normalizedCard = String(cardNumber || '').replace(/\s/g, '');
+
+    if (!cardholderName || !expiry || !/^\d{3,4}$/.test(String(cvv || ''))) {
+      return res.status(400).json({ message: 'Enter the cardholder name, expiry, and a valid CVV.' });
+    }
+
+    if (!SANDBOX_CARDS.has(normalizedCard)) {
+      return res.status(400).json({ message: 'Sandbox payment declined. Use one of the listed test card numbers.' });
+    }
+
+    const order = await Order.findOne({ _id: req.params.id, buyer: req.user._id });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.paymentStatus === 'Paid') {
+      return res.json({ message: 'This order is already paid.', orderId: order._id, paymentStatus: order.paymentStatus });
+    }
+
+    order.paymentStatus = 'Paid';
+    order.paidAt = new Date();
+    await order.save();
+
+    res.json({
+      message: 'Sandbox payment approved. No real money was charged.',
+      orderId: order._id,
+      paymentStatus: order.paymentStatus,
+    });
+  } catch (error) {
+    res.status(400).json({ message: 'Unable to process sandbox payment', error: error.message });
   }
 };
