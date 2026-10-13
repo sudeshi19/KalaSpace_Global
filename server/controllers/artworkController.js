@@ -74,6 +74,10 @@ export const deleteArtwork = async (req, res) => {
 
 export const updateArtworkStock = async (req, res) => {
   try {
+    if (req.user.role !== 'artist') {
+      return res.status(403).json({ message: 'Only the artwork artist can update product count.' });
+    }
+
     const stock = Number.parseInt(req.body.stock, 10);
     if (!Number.isInteger(stock) || stock < 0) {
       return res.status(400).json({ message: 'Stock must be a whole number of zero or more.' });

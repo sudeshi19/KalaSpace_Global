@@ -26,7 +26,7 @@ export const getAdminSummary = async (req, res) => {
       id: order._id,
       buyer: order.email,
       date: order.createdAt,
-      status: 'Paid',
+      status: order.paymentStatus || 'Pending',
       total: order.total,
       items: order.items.reduce((count, item) => count + item.quantity, 0),
     }));
@@ -55,18 +55,5 @@ export const deleteAdminArtwork = async (req, res) => {
     res.json({ message: 'Artwork deleted successfully', id: artwork._id });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete artwork', error: error.message });
-  }
-};
-
-export const updateAdminStock = async (req, res) => {
-  try {
-    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Admin access required' });
-    const amount = Number.parseInt(req.body.amount, 10);
-    if (!Number.isFinite(amount) || amount < 0) return res.status(400).json({ message: 'A valid stock amount is required' });
-    const artwork = await Artwork.findByIdAndUpdate(req.params.id, { $set: { stock: amount } }, { new: true });
-    if (!artwork) return res.status(404).json({ message: 'Artwork not found' });
-    res.json({ id: artwork._id, stock: artwork.stock });
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update stock', error: error.message });
   }
 };
