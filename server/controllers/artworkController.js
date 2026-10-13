@@ -72,6 +72,26 @@ export const deleteArtwork = async (req, res) => {
   }
 };
 
+export const updateArtworkStock = async (req, res) => {
+  try {
+    const stock = Number.parseInt(req.body.stock, 10);
+    if (!Number.isInteger(stock) || stock < 0) {
+      return res.status(400).json({ message: 'Stock must be a whole number of zero or more.' });
+    }
+
+    const artwork = await Artwork.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user._id },
+      { $set: { stock } },
+      { new: true, runValidators: true },
+    );
+    if (!artwork) return res.status(404).json({ message: 'Artwork not found or you do not own it' });
+    res.json({ id: artwork._id, stock: artwork.stock, message: 'Stock updated successfully' });
+  } catch (err) {
+    if (err.name === 'CastError') return res.status(400).json({ message: 'Invalid artwork id' });
+    res.status(500).json({ message: 'Failed to update stock', error: err.message });
+  }
+};
+
 // GET /api/artworks/:id
 export const getArtworkById = async (req, res) => {
   try {
