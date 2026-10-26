@@ -94,6 +94,34 @@ export const getArtistOrders = async (req, res) => {
   }
 };
 
+export const getBuyerOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ buyer: req.user._id })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({
+      buyer: {
+        id: req.user._id,
+        name: req.user.displayName || req.user.name || 'KalaSpace member',
+        email: req.user.email,
+        role: req.user.role,
+        joinedAt: req.user.createdAt,
+      },
+      orders: orders.map((order) => ({
+        id: order._id,
+        date: order.createdAt,
+        total: order.total,
+        paymentStatus: order.paymentStatus || 'Pending',
+        status: order.paymentStatus === 'Paid' ? 'Processing' : 'Awaiting payment',
+        items: Array.isArray(order.items) ? order.items : [],
+      })),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to load buyer orders', error: error.message });
+  }
+};
+
 export const getOrderById = async (req, res) => {
   try {
     const order = await Order.findOne({
